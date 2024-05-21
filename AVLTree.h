@@ -14,19 +14,19 @@ class AVLTree {
         
     public:
         // Constructor
-        AVLTree();
+        AVLTree() : root(nullptr) {}
 
         // Rule of three
-        ~AVLTree();
-        AVLTree(const AVLTree&) = delete;
-        AVLTree& operator=(const AVLTree&) = delete;
+        //~AVLTree();
+        //AVLTree(const AVLTree&) = delete;
+        //AVLTree& operator=(const AVLTree&) = delete;
 
         // Mutator functions
         void insert(const string&);
          
         // Accessor functions
         int balanceFactor(Node*) const;
-        void printBalanceFactors() const;
+        void printBalanceFactors() const { printBalanceFactors(root); }
         void visualizeTree(const string&) const;
 
     private:
