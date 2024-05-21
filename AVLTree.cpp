@@ -1,5 +1,5 @@
 #include "AVLTree.h"
- 
+#include <fstream>
 using namespace std;
 
 void AVLTree::visualizeTree(const string &outputFilename) const{
@@ -21,12 +21,12 @@ void AVLTree::visualizeTree(ofstream & outFS, Node *n) const{
     if(n){
         if(n->left){
             visualizeTree(outFS,n->left);
-            outFS<<n->data <<" -> " <<n->left->data<<";"<<endl;    
+            outFS<<n->key <<" -> " <<n->left->key<<";"<<endl;    
         }
 
         if(n->right){
             visualizeTree(outFS,n->right);
-            outFS<<n->data <<" -> " <<n->right->data<<";"<<endl;    
+            outFS<<n->key <<" -> " <<n->right->key<<";"<<endl;    
         }
     }
 }

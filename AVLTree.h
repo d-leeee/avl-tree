@@ -2,7 +2,7 @@
 
 #include "Node.h"
 
-#include <ostream>
+#include <iostream>
 #include <string>
 
 using std::ofstream;

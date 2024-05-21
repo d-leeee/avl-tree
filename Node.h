@@ -6,7 +6,7 @@ using std::string;
 
 class Node {
 
-    friend class AVLtree;
+    friend class AVLTree;
 
     public: 
         Node(const string& key): key(key), left(nullptr), right(nullptr) {}
