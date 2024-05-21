@@ -31,10 +31,13 @@ class AVLTree {
 
     private:
         // Helper functions
-        Node* findUnbalanceNode() const;
-        void rotate();
-        void rotateLeft();
-        void rotateRight();
+        void updateHeight(Node*);
+        Node* findUnbalanceFactors(Node*);
+        void rebalance(Node*);
+
+        void rotateLeft(Node*);
+        void rotateRight(Node*);
+        
         void printBalanceFactors(Node*) const;
         void visualizeTree(ofstream&, Node*) const;
 };

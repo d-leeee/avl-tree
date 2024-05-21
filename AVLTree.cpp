@@ -6,53 +6,136 @@ void AVLTree::insert(const string& key) {
 
     // If tree is empty
     if (!root) {
-cout << "root is empty, creating new root" << endl;
         root = new Node(key);
         return;
     }
 
     Node* curr = root;
 
+    // Insertion
     while (curr) {
-
+        
         // Traverse left
         if (key < curr->key) {
-cout << "key is less than curent node, " << curr->key << endl;
-            if (!curr->left) {
-cout << curr->key << " is a leaf node, inserting" << endl;                
+
+            if (!curr->left) {              
                 curr->left = new Node(key);
+                curr->left->parent = curr;
+                updateHeight(curr->left);
+                rebalance(curr->left);
                 return;
             }
-cout << "travsering left" << endl;
             curr = curr->left;
         }
 
         // Traverse right
         else if (key > curr->key) {
-cout << "key is greater than curent node, " << curr->key << endl;
+
             if (!curr->right) {
-cout << curr->key << " is a leaf node, inserting" << endl;                
                 curr->right = new Node(key);
+                curr->right->parent = curr;
+                updateHeight(curr->right);
+                rebalance(curr->right);
                 return;
             }
-cout << "travsering right" << endl;
             curr = curr->right;
         }
+    }
+}
 
-        // Key already exists
+void AVLTree::updateHeight(Node* curr) {
+    while (curr) {
+        curr = curr->parent;
+        curr->height++;
+    }
+}
+
+Node* AVLTree::findUnbalanceFactors(Node* curr) {
+
+    int balanceFactor;
+
+    while (curr) {
+        
+        // If right subtree does not exist
+        if (curr->left && !curr->right) {
+            balanceFactor = curr->left->height + 1;
+        }
+        // If left subtree does not exist
+        else if (!curr->left && curr->right) {
+            balanceFactor = -1 + curr->right->height;
+        }
+        // If both subtrees exist
+        else if (curr->left && curr->right) {
+            balanceFactor = curr->left->height - curr->right->height;
+        }
+        // If both subtrees dont exist
         else {
-            throw runtime_error("Key already exists.");
+            balanceFactor = 0;
+        }
+
+        // If subtree is not balanced
+        if (balanceFactor != 1 || balanceFactor != 0 || balanceFactor != -1) {
+            return curr;
+        }
+        // If subtree is balanced, traverse to parent
+        else {
+            curr = curr->parent;
         }
     }
+
+    return nullptr;
+}
+
+void AVLTree::rebalance(Node* node) {
+
+    Node* unbalancedFactor = findUnbalanceFactors(node);
+
+    // If tree is already balanced
+    if (!unbalancedFactor) {
+        return;
+    }
+    // If tree is not balanced
+    else {
+
+        // CASE 1: left-left (2, 1)
+        if (node->height == 2 && node->left->height == 1) {
+            rotateRight(node);
+        }
+
+        // CASE 2: left-right (2, -1)
+        else if (node->height == 2 && node->left->height == -1) {
+            rotateLeft(node->left);
+            rotateRight(node);
+        }
+
+        // CASE 3: right-right (-2, -1)
+        else if (node->height == -2 && node->left->height == -1) {
+            rotateLeft(node);
+        }
+
+        // CASE 4: right-left (-2, 1)
+        else if (node->height == -2 && node->left->height == 1) {
+            rotateRight(node->right);
+            rotateLeft(node);
+        }
+    }
+}
+
+void AVLTree::rotateLeft(Node* node) {
+    
+}
+
+void AVLTree::rotateRight(Node* node) {
+
 }
 
 void AVLTree::printBalanceFactors(Node* node) const {
 
     if (!node) return;
-    
-    cout << node->key << ", ";
 
     printBalanceFactors(node->left);
+    cout << node->key << "(" << balanceFactor << "), ";
+
     printBalanceFactors(node->right);
 }
 
