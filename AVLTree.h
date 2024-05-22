@@ -31,8 +31,7 @@ class AVLTree {
 
     private:
         // Helper functions
-        void updateHeight(Node*);
-        Node* findUnbalanceFactors(Node*);
+        void updateBalanceFactors(Node*);
         void rebalance(Node*);
 
         void rotateLeft(Node*);

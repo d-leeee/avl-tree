@@ -11,122 +11,154 @@ void AVLTree::insert(const string& key) {
     }
 
     Node* curr = root;
+    Node* parent = nullptr;
 
-    // Insertion
+    // Traverse tree
     while (curr) {
-        
+
+        parent = curr;
+
         // Traverse left
         if (key < curr->key) {
-
-            if (!curr->left) {              
-                curr->left = new Node(key);
-                curr->left->parent = curr;
-                updateHeight(curr->left);
-                rebalance(curr->left);
-                return;
-            }
             curr = curr->left;
         }
-
         // Traverse right
         else if (key > curr->key) {
-
-            if (!curr->right) {
-                curr->right = new Node(key);
-                curr->right->parent = curr;
-                updateHeight(curr->right);
-                rebalance(curr->right);
-                return;
-            }
             curr = curr->right;
         }
-    }
-}
-
-void AVLTree::updateHeight(Node* curr) {
-    while (curr) {
-        curr = curr->parent;
-        curr->height++;
-    }
-}
-
-Node* AVLTree::findUnbalanceFactors(Node* curr) {
-
-    int balanceFactor;
-
-    while (curr) {
-        
-        // If right subtree does not exist
-        if (curr->left && !curr->right) {
-            balanceFactor = curr->left->height + 1;
-        }
-        // If left subtree does not exist
-        else if (!curr->left && curr->right) {
-            balanceFactor = -1 + curr->right->height;
-        }
-        // If both subtrees exist
-        else if (curr->left && curr->right) {
-            balanceFactor = curr->left->height - curr->right->height;
-        }
-        // If both subtrees dont exist
+        // Key already exists
         else {
-            balanceFactor = 0;
-        }
-
-        // If subtree is not balanced
-        if (balanceFactor != 1 || balanceFactor != 0 || balanceFactor != -1) {
-            return curr;
-        }
-        // If subtree is balanced, traverse to parent
-        else {
-            curr = curr->parent;
+            return;
         }
     }
 
-    return nullptr;
-}
+    // Insert new node
+    Node* newNode = new Node(key);
+    newNode->parent = parent;
 
-void AVLTree::rebalance(Node* node) {
-
-    Node* unbalancedFactor = findUnbalanceFactors(node);
-
-    // If tree is already balanced
-    if (!unbalancedFactor) {
-        return;
+    if (key < parent->key) {
+        parent->left = newNode;
     }
-    // If tree is not balanced
     else {
+        parent->right = newNode;
+    }
+}
 
-        // CASE 1: left-left (2, 1)
-        if (node->height == 2 && node->left->height == 1) {
-            rotateRight(node);
+void AVLTree::updateBalanceFactors(Node* curr) {
+
+    // Traverse ancestors starting from new node leaf
+    while (curr) {
+
+        // Update balance factor if parent exists
+        if (curr->parent) {
+            
+            if (curr == curr->parent->left) {
+                curr->parent->balanceFactor++;
+            }
+            else {
+                curr->parent->balanceFactor--;
+            }  
         }
 
-        // CASE 2: left-right (2, -1)
-        else if (node->height == 2 && node->left->height == -1) {
-            rotateLeft(node->left);
-            rotateRight(node);
-        }
+        curr = curr->parent;
+    }
+}
 
-        // CASE 3: right-right (-2, -1)
-        else if (node->height == -2 && node->left->height == -1) {
-            rotateLeft(node);
-        }
+void AVLTree::rebalance(Node* curr) {
 
-        // CASE 4: right-left (-2, 1)
-        else if (node->height == -2 && node->left->height == 1) {
-            rotateRight(node->right);
-            rotateLeft(node);
+    // Traverse up from new node leaf and find imbalance
+    while (curr) {
+
+        if (curr->balanceFactor == 2 || curr->balanceFactor == -2) {
+            
+            if (curr->balanceFactor == 2) {
+
+                // CASE 1: left-left (2, 1)
+                if (curr->left->balanceFactor >= 0) {
+                    rotateRight(curr);
+                }
+
+                // CASE 2: left-right (2, -1)
+                else {
+                    rotateLeft(curr->left);
+                    rotateRight(curr);
+                }
+            }
+            
+            else if (curr->balanceFactor == -2) {
+
+                // CASE 3: right-right (-2, -1)
+                if (curr->right->balanceFactor <= 0) {
+                    rotateLeft(curr);
+                }
+
+                // CASE 4: right-left (-2, 1)
+                else {
+                    rotateRight(curr->right);
+                    rotateLeft(curr);
+                }
+            }
         }
+        curr = curr->parent;
     }
 }
 
 void AVLTree::rotateLeft(Node* node) {
+
+    Node* newNode = node->right;
+    node->right = newNode->left;
+
+    if (newNode->left) {
+        newNode->left->parent = node;
+    }
+
+    newNode->parent = node->parent;
+
+    if (!node->parent) {
+        root = newNode;
+    }
+    else if (node == node->parent->left) {
+        node->parent->left = newNode;
+    }
+    else {
+        node->parent->right = newNode;
+    }
+
+    newNode->left = node;
+    node->parent = newNode;
     
+    // Update balance factors
+    node->balanceFactor = node->balanceFactor - 1 - max(newNode->balanceFactor, 0);
+    newNode->balanceFactor = newNode->balanceFactor - 1 + min(node->balanceFactor, 0);
 }
 
 void AVLTree::rotateRight(Node* node) {
 
+    Node* newNode = node->left;
+    node->left = newNode->right;
+
+    if (newNode->right) {
+        newNode->right->parent = node; 
+    } 
+
+    newNode->parent = node->parent;
+
+    if (!node->parent) {
+        root = newNode;
+    } 
+    else if (node == node->parent->right) {
+        node->parent->right = newNode;
+    }
+    else {
+        node->parent->left = newNode;
+    } 
+
+    newNode->right = node;
+    node->parent = newNode;
+
+    // Update balance factors
+    node->balanceFactor = node->balanceFactor + 1 - min(newNode->balanceFactor, 0);
+    newNode->balanceFactor = newNode->balanceFactor + 1 + max(node->balanceFactor, 0);
 }
 
 void AVLTree::printBalanceFactors(Node* node) const {
@@ -134,8 +166,7 @@ void AVLTree::printBalanceFactors(Node* node) const {
     if (!node) return;
 
     printBalanceFactors(node->left);
-    cout << node->key << "(" << balanceFactor << "), ";
-
+    cout << node->key << "(" << node->balanceFactor << "), ";
     printBalanceFactors(node->right);
 }
 
