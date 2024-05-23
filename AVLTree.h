@@ -17,26 +17,35 @@ class AVLTree {
         AVLTree() : root(nullptr) {}
 
         // Rule of three
-        //~AVLTree();
-        //AVLTree(const AVLTree&) = delete;
-        //AVLTree& operator=(const AVLTree&) = delete;
+        ~AVLTree() { destroyTree(root); }            // Destructor
+        AVLTree(const AVLTree&) = delete;            // Remove default copy constructor
+        AVLTree& operator=(const AVLTree&) = delete; // Remove default copy assignment operator
 
         // Mutator functions
-        void insert(const string&);
+        void insert(const string&); // Insert new value into tree
          
         // Accessor functions
-        int balanceFactor(Node*) const;
-        void printBalanceFactors() const { printBalanceFactors(root); }
-        void visualizeTree(const string&) const;
+        void printBalanceFactors() const { printBalanceFactors(root); } // Print tree with each node's balance factor
+        void visualizeTree(const string&) const;                        // Create a dotty file of the tree
 
     private:
         // Helper functions
-        void updateBalanceFactors(Node*);
-        void rebalance(Node*);
+        void updateBalanceFactors(Node*); // Traverse through ancestors to update the balance factors of each node
+        void rebalance(Node*);            // Traverse the tree and rebalance 
 
-        void rotateLeft(Node*);
-        void rotateRight(Node*);
+        void rotateLeft(Node*);  // Perform left rotation on a node 
+        void rotateRight(Node*); // Perform right rotation on a node
         
-        void printBalanceFactors(Node*) const;
-        void visualizeTree(ofstream&, Node*) const;
+        void printBalanceFactors(Node*) const;      // Recursively traverse the tree to print
+        void visualizeTree(ofstream&, Node*) const; // Traverse the tree for the public visualizeTree function
+
+        void destroyTree(Node* curr) { // Recursively destroy the tree
+
+            if (!curr) return;
+
+            destroyTree(curr->left);
+            destroyTree(curr->right);
+
+            delete curr;
+        }
 };

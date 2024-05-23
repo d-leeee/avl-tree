@@ -120,18 +120,22 @@ void AVLTree::rotateLeft(Node* node) {
     Node* newNode = node->right;
     node->right = newNode->left;
 
+    // If newNode left child exists, update parent to node
     if (newNode->left) {
         newNode->left->parent = node;
     }
 
     newNode->parent = node->parent;
 
+    // If no parent, set root
     if (!node->parent) {
         root = newNode;
     }
+    // If left child
     else if (node == node->parent->left) {
         node->parent->left = newNode;
     }
+    // If right child
     else {
         node->parent->right = newNode;
     }
@@ -149,20 +153,24 @@ void AVLTree::rotateRight(Node* node) {
     Node* newNode = node->left;
     node->left = newNode->right;
 
+    // If newNode right child exists, update parent to node
     if (newNode->right) {
         newNode->right->parent = node; 
     } 
 
     newNode->parent = node->parent;
 
+    // If no parent, set root
     if (!node->parent) {
         root = newNode;
     } 
-    else if (node == node->parent->right) {
-        node->parent->right = newNode;
-    }
-    else {
+    // If left child
+    else if (node == node->parent->left) {
         node->parent->left = newNode;
+    }
+    // If right child
+    else {
+        node->parent->right = newNode;
     } 
 
     newNode->right = node;
