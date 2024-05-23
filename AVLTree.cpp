@@ -2,6 +2,7 @@
 #include <fstream>
 using namespace std;
 
+// Insert new value into tree
 void AVLTree::insert(const string& key) {
 
     // If tree is empty
@@ -48,6 +49,7 @@ void AVLTree::insert(const string& key) {
     rebalance(newNode);
 }
 
+// Traverse through ancestors to update the balance factors of each node
 void AVLTree::updateBalanceFactors(Node* curr) {
 
     // Traverse ancestors starting from new node leaf
@@ -68,6 +70,7 @@ void AVLTree::updateBalanceFactors(Node* curr) {
     }
 }
 
+// Traverse the tree and rebalance 
 void AVLTree::rebalance(Node* curr) {
         
     // Traverse up from new node leaf and find imbalance
@@ -78,6 +81,7 @@ void AVLTree::rebalance(Node* curr) {
 
             // Update parent balanceFactor
             if (curr->parent) {
+
                 // If left child
                 if (curr->parent->left == curr) {
                     curr->parent->balanceFactor--;
@@ -115,6 +119,7 @@ void AVLTree::rebalance(Node* curr) {
     }
 }
 
+// Perform left rotation on a node 
 void AVLTree::rotateLeft(Node* node) {
 
     Node* newNode = node->right;
@@ -148,6 +153,7 @@ void AVLTree::rotateLeft(Node* node) {
     newNode->balanceFactor = newNode->balanceFactor + 1 + max(0, node->balanceFactor);
 }
 
+// Perform right rotation on a node
 void AVLTree::rotateRight(Node* node) {
 
     Node* newNode = node->left;
@@ -181,6 +187,7 @@ void AVLTree::rotateRight(Node* node) {
     newNode->balanceFactor = newNode->balanceFactor - 1 + min(0, node->balanceFactor);
 }
 
+// Recursively traverse the tree to print
 void AVLTree::printBalanceFactors(Node* node) const {
 
     if (!node) return;
@@ -190,6 +197,7 @@ void AVLTree::printBalanceFactors(Node* node) const {
     printBalanceFactors(node->right);
 }
 
+// Create a dotty file of the tree
 void AVLTree::visualizeTree(const string& outputFilename) const {
 
     ofstream outFS(outputFilename.c_str());
@@ -209,6 +217,7 @@ void AVLTree::visualizeTree(const string& outputFilename) const {
     system(command.c_str());
 }
 
+// Traverse the tree for the public visualizeTree function
 void AVLTree::visualizeTree(ofstream& outFS, Node* node) const {
 
     if (node) {
