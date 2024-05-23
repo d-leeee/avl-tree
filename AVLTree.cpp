@@ -1,5 +1,7 @@
 #include "AVLTree.h"
+
 #include <fstream>
+
 using namespace std;
 
 // Insert new value into tree
