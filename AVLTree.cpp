@@ -42,6 +42,10 @@ void AVLTree::insert(const string& key) {
     else {
         parent->right = newNode;
     }
+
+    // Balance the tree
+    updateBalanceFactors(newNode);
+    rebalance(newNode);
 }
 
 void AVLTree::updateBalanceFactors(Node* curr) {
@@ -65,40 +69,48 @@ void AVLTree::updateBalanceFactors(Node* curr) {
 }
 
 void AVLTree::rebalance(Node* curr) {
-
+        
     // Traverse up from new node leaf and find imbalance
     while (curr) {
-
+        
+        // If imbalance is found
         if (curr->balanceFactor == 2 || curr->balanceFactor == -2) {
-            
-            if (curr->balanceFactor == 2) {
 
-                // CASE 1: left-left (2, 1)
-                if (curr->left->balanceFactor >= 0) {
-                    rotateRight(curr);
+            // Update parent balanceFactor
+            if (curr->parent) {
+                // If left child
+                if (curr->parent->left == curr) {
+                    curr->parent->balanceFactor--;
                 }
-
-                // CASE 2: left-right (2, -1)
+                // If right child
                 else {
-                    rotateLeft(curr->left);
-                    rotateRight(curr);
+                    curr->parent->balanceFactor++;
                 }
             }
-            
-            else if (curr->balanceFactor == -2) {
 
-                // CASE 3: right-right (-2, -1)
-                if (curr->right->balanceFactor <= 0) {
-                    rotateLeft(curr);
-                }
+            // CASE 1: left-left (2, 1)
+            if (curr->balanceFactor == 2 && curr->left->balanceFactor == 1) {
+                rotateRight(curr);
+            }
 
-                // CASE 4: right-left (-2, 1)
-                else {
-                    rotateRight(curr->right);
-                    rotateLeft(curr);
-                }
+            // CASE 2: left-right (2, -1)
+            else if (curr->balanceFactor == 2 && curr->left->balanceFactor == -1) {
+                rotateLeft(curr->left);
+                rotateRight(curr);
+            }
+
+            // CASE 3: right-right (-2, -1)
+            if (curr->balanceFactor == -2 && curr->right->balanceFactor == -1) {
+                rotateLeft(curr);
+            }
+
+            // CASE 4: right-left (-2, 1)
+            else if (curr->balanceFactor == -2 && curr->right->balanceFactor == 1) {
+                rotateRight(curr->right);
+                rotateLeft(curr);
             }
         }
+
         curr = curr->parent;
     }
 }
@@ -128,8 +140,8 @@ void AVLTree::rotateLeft(Node* node) {
     node->parent = newNode;
     
     // Update balance factors
-    node->balanceFactor = node->balanceFactor - 1 - max(newNode->balanceFactor, 0);
-    newNode->balanceFactor = newNode->balanceFactor - 1 + min(node->balanceFactor, 0);
+    node->balanceFactor = node->balanceFactor + 1 - min(0, newNode->balanceFactor);
+    newNode->balanceFactor = newNode->balanceFactor + 1 + max(0, node->balanceFactor);
 }
 
 void AVLTree::rotateRight(Node* node) {
@@ -157,8 +169,8 @@ void AVLTree::rotateRight(Node* node) {
     node->parent = newNode;
 
     // Update balance factors
-    node->balanceFactor = node->balanceFactor + 1 - min(newNode->balanceFactor, 0);
-    newNode->balanceFactor = newNode->balanceFactor + 1 + max(node->balanceFactor, 0);
+    node->balanceFactor = node->balanceFactor - 1 - max(0, newNode->balanceFactor);
+    newNode->balanceFactor = newNode->balanceFactor - 1 + min(0, node->balanceFactor);
 }
 
 void AVLTree::printBalanceFactors(Node* node) const {
@@ -170,31 +182,37 @@ void AVLTree::printBalanceFactors(Node* node) const {
     printBalanceFactors(node->right);
 }
 
-void AVLTree::visualizeTree(const string &outputFilename) const {
+void AVLTree::visualizeTree(const string& outputFilename) const {
+
     ofstream outFS(outputFilename.c_str());
-    if(!outFS.is_open()){
-        cout<<"Error"<<endl;
+
+    if (!outFS.is_open()) {
+        cout << "Error" << endl;
         return;
     }
-    outFS<<"digraph G {"<<endl;
-    visualizeTree(outFS,root);
-    outFS<<"}";
+
+    outFS << "digraph G {" << endl;
+    visualizeTree(outFS, root);
+    outFS << "}";
     outFS.close();
-    string jpgFilename = outputFilename.substr(0,outputFilename.size()-4)+".jpg";
+
+    string jpgFilename = outputFilename.substr(0, outputFilename.size() - 4) + ".jpg";
     string command = "dot -Tjpg " + outputFilename + " -o " + jpgFilename;
     system(command.c_str());
 }
 
-void AVLTree::visualizeTree(ofstream & outFS, Node *n) const {
-    if(n){
-        if(n->left){
-            visualizeTree(outFS,n->left);
-            outFS<<n->key <<" -> " <<n->left->key<<";"<<endl;    
+void AVLTree::visualizeTree(ofstream& outFS, Node* node) const {
+
+    if (node) {
+
+        if (node->left) {
+            visualizeTree(outFS, node->left);
+            outFS << node->key << " -> " << node->left->key << ";" << endl;    
         }
 
-        if(n->right){
-            visualizeTree(outFS,n->right);
-            outFS<<n->key <<" -> " <<n->right->key<<";"<<endl;    
+        if (node->right) {
+            visualizeTree(outFS, node->right);
+            outFS << node->key << " -> " << node->right->key << ";" << endl;    
         }
     }
 }
