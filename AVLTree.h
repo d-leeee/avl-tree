@@ -33,13 +33,14 @@ class AVLTree {
         // Helper functions
         void updateBalanceFactors(Node*); // Traverse through ancestors to update the balance factors of each node
         void rebalance(Node*);            // Traverse the tree and rebalance 
-
-        void rotateLeft(Node*);  // Perform left rotation on a node 
-        void rotateRight(Node*); // Perform right rotation on a node
+        void rotateLeft(Node*);           // Perform left rotation on a node 
+        void rotateRight(Node*);          // Perform right rotation on a node
         
+        // Print functions
         void printBalanceFactors(Node*) const;      // Recursively traverse the tree to print
         void visualizeTree(ofstream&, Node*) const; // Traverse the tree for the public visualizeTree function
 
+        // Destructor function
         void destroyTree(Node* curr) { // Recursively destroy the tree
 
             if (!curr) return;
