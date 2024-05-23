@@ -25,8 +25,9 @@ class AVLTree {
         void insert(const string&); // Insert new value into tree
          
         // Accessor functions
-        void printBalanceFactors() const { printBalanceFactors(root); } // Print tree with each node's balance factor
-        void visualizeTree(const string&) const;                        // Create a dotty file of the tree
+        const int balanceFactor(Node* node) const { return node->balanceFactor; } // Return balance factor of a node
+        void printBalanceFactors() const { printBalanceFactors(root); }           // Print tree with each node's balance factor
+        void visualizeTree(const string&) const;                                  // Create a dotty file of the tree
 
     private:
         // Helper functions
