@@ -205,8 +205,7 @@ void AVLTree::visualizeTree(const string& outputFilename) const {
     ofstream outFS(outputFilename.c_str());
 
     if (!outFS.is_open()) {
-        cout << "Error" << endl;
-        return;
+        throw runtime_error("Could not open file.");
     }
 
     outFS << "digraph G {" << endl;
